@@ -1,0 +1,38 @@
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	f, err := os.Open("millionRandom.txt")
+	if err != nil {
+		fmt.Println("open file err:", err.Error())
+		return
+	}
+	content, err := ioutil.ReadAll(f)
+	f.Close()
+	if err != nil {
+		fmt.Println("read file err:", err.Error())
+		return
+	}
+	m := make(map[string]int)
+	// for _, s := range []rune(string(content)) {
+	for _, s := range strings.Split(string(content), "\r\n") {
+		m[s] += 1
+	}
+	f1, err := os.OpenFile("output.txt", os.O_CREATE|os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0666)
+	if err != nil {
+		fmt.Println("create file err:", err.Error())
+		return
+	}
+	for k, v := range m {
+		fmt.Println(k, ":", v)
+		f1.WriteString(k + ":" + strconv.Itoa(v) + "\r\n")
+	}
+	f1.Close()
+}
